@@ -1,0 +1,53 @@
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'brand',
+      neutral: 'zinc'
+    },
+    icons: {
+      arrowDown: 'i-iconoir-arrow-down',
+      arrowLeft: 'i-iconoir-arrow-left',
+      arrowRight: 'i-iconoir-arrow-right',
+      arrowUp: 'i-iconoir-arrow-up',
+      caution: 'i-iconoir-warning-circle',
+      check: 'i-iconoir-check',
+      chevronDoubleLeft: 'i-iconoir-fast-arrow-left',
+      chevronDoubleRight: 'i-iconoir-fast-arrow-right',
+      chevronDown: 'i-iconoir-nav-arrow-down',
+      chevronLeft: 'i-iconoir-nav-arrow-left',
+      chevronRight: 'i-iconoir-nav-arrow-right',
+      chevronUp: 'i-iconoir-nav-arrow-up',
+      close: 'i-iconoir-xmark',
+      copy: 'i-iconoir-copy',
+      copyCheck: 'i-iconoir-clipboard-check',
+      dark: 'i-iconoir-half-moon',
+      drag: 'i-iconoir-menu',
+      ellipsis: 'i-iconoir-more-horiz',
+      error: 'i-iconoir-xmark-circle',
+      external: 'i-iconoir-arrow-up-right',
+      eye: 'i-iconoir-eye',
+      eyeOff: 'i-iconoir-eye-closed',
+      file: 'i-iconoir-page',
+      folder: 'i-iconoir-folder',
+      folderOpen: 'i-iconoir-folder',
+      hash: 'i-iconoir-hashtag',
+      info: 'i-iconoir-info-circle',
+      light: 'i-iconoir-sun-light',
+      loading: 'i-iconoir-refresh',
+      menu: 'i-iconoir-menu',
+      minus: 'i-iconoir-minus',
+      panelClose: 'i-iconoir-sidebar-collapse',
+      panelOpen: 'i-iconoir-sidebar-expand',
+      plus: 'i-iconoir-plus',
+      reload: 'i-iconoir-undo',
+      search: 'i-iconoir-search',
+      stop: 'i-iconoir-square',
+      star: 'i-iconoir-star',
+      success: 'i-iconoir-check-circle',
+      system: 'i-iconoir-computer',
+      tip: 'i-iconoir-light-bulb',
+      upload: 'i-iconoir-upload',
+      warning: 'i-iconoir-warning-triangle'
+    }
+  }
+})
