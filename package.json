@@ -3,15 +3,18 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "db:migrate": "node server/database/migrate.ts",
+    "build": "pnpm db:migrate && nuxt build",
+    "dev": "pnpm db:migrate && nuxt dev",
+    "generate": "pnpm db:migrate && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "@nuxt/content": "^3.16.0",
     "@nuxt/ui": "^4.11.0",
+    "@vercel/blob": "^2.8.0",
     "better-sqlite3": "^13.0.3",
     "date-fns": "^4.4.0",
     "nuxt": "^4.5.2",
