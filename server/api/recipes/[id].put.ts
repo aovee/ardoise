@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   await db.execute({
     sql: `UPDATE recipes
-          SET title = ?, prep_time = ?, cook_time = ?, categories = ?, ingredients = ?, image = ?,
+          SET title = ?, prep_time = ?, cook_time = ?, categories = ?, ingredients = ?, image = ?, servings = ?,
               updated_at = datetime('now')
           WHERE id = ?`,
     args: [
@@ -27,12 +27,13 @@ export default defineEventHandler(async (event) => {
       JSON.stringify(input.categories),
       JSON.stringify(input.ingredients),
       input.image ?? null,
+      input.servings,
       id
     ]
   })
 
   // If the image changed, delete the old blob (no-op for pasted/external URLs).
-  const oldImage = rows[0].image ? String(rows[0].image) : null
+  const oldImage = rows[0]?.image ? String(rows[0].image) : null
   if (oldImage !== (input.image ?? null)) {
     await deleteBlobIfOwned(oldImage)
   }

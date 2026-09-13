@@ -1,3 +1,4 @@
+<
 <script setup lang="ts">
 interface SortItem {
   label: string
@@ -10,43 +11,18 @@ useSeoMeta({
 
 const { data: recipes, pending, refresh } = useFetch('/api/recipes')
 
-const { categories } = useCategories()
-const categoriesFilterItems = computed(() => [
-  {
-    label: 'Toutes',
-    value: '*'
-  },
-  ...categories.value.map((c) => ({ label: c, value: c }))
-])
-const categoryFilter = ref<string>('*')
-
-const sortItems: SortItem[] = [
-  {
-    label: 'Du plus récent au plus ancien',
-    value: 'created_at.desc'
-  },
-  {
-    label: 'Du plus ancien au plus récent',
-    value: 'created_at.asc'
-  },
-  {
-    label: 'De A à Z',
-    value: 'title.asc'
-  },
-  {
-    label: 'De Z à A',
-    value: 'title.desc'
-  }
-]
-const sort = ref<SortItem>(sortItems[0]!)
+const {
+  categoryItems,
+  category: categoryFilter,
+  selectCategory: applyCategoryFilter,
+  search,
+  sortItems,
+  sort,
+  results: sortedRecipes
+} = useRecipeFilters(recipes)
 
 const showAddModal = ref<boolean>(false)
-const search = ref<string>('')
 const debouncedSearch = refDebounced(search, 300)
-
-function applyCategoryFilter(category: { label: string; value: string }) {
-  categoryFilter.value = category.value
-}
 
 const prefilteredRecipes = computed<Recipe[]>(() => {
   if (!recipes.value) return [] as Recipe[]
@@ -65,25 +41,6 @@ const filteredRecipes = computed<Recipe[]>(() => {
   const pattern = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
 
   return prefilteredRecipes.value.filter((r) => pattern.test(r.title))
-})
-
-const sortedRecipes = computed<Recipe[]>(() => {
-  const [by, order] = sort.value.value.split('.')
-  const dir = order === 'asc' ? 1 : -1
-
-  // Clone first: Array.sort mutates in place, and filteredRecipes can be the
-  // raw fetched array — sorting it would mutate reactive source data.
-  return [...filteredRecipes.value].sort((a: Recipe, b: Recipe) => {
-    if (by === 'created_at') {
-      // createdAt arrives as an ISO string over client fetches (only SSR
-      // hydration revives a real Date), so coerce before comparing.
-      return (
-        (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) *
-        dir
-      )
-    }
-    return a.title.localeCompare(b.title) * dir
-  })
 })
 
 const actions = computed(() => [
@@ -125,7 +82,7 @@ const actions = computed(() => [
           </div>
           <div class="flex flex-wrap gap-2">
             <UButton
-              v-for="(category, k) in categoriesFilterItems"
+              v-for="(category, k) in categoryItems"
               :key="k"
               class="rounded-full py-2 px-3 clickable"
               :variant="
@@ -161,9 +118,9 @@ const actions = computed(() => [
             variant="ghost"
             class="w-min text-primary"
             :search-input="false"
+            :trailing-icon="false"
             :ui="{
-              leadingIcon: 'text-primary',
-              trailingIcon: 'hidden'
+              leadingIcon: 'text-primary'
             }"
           />
         </template>
@@ -172,7 +129,7 @@ const actions = computed(() => [
 
     <template #body>
       <div
-        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6"
+        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 3xl:grid-cols-6 gap-6"
       >
         <div
           v-if="pending || (recipes && recipes.length <= 0)"
@@ -203,3 +160,4 @@ const actions = computed(() => [
     </template>
   </UDashboardPanel>
 </template>
+>
