@@ -58,6 +58,11 @@ export default defineAppConfig({
       defaultVariants: {
         variant: 'subtle'
       }
+    },
+    dashboardNavbar: {
+      slots: {
+        root: 'h-auto py-5'
+      }
     }
   }
 })

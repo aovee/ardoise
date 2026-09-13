@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { addDays, lastDayOfWeek, startOfWeek } from 'date-fns'
 
+useSeoMeta({
+  title: 'Votre planning de la semaine'
+})
+
 const today = computed(() => new Date())
 
 const firstWeekDay = computed(() =>

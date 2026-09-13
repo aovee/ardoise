@@ -1,21 +1,21 @@
 <script setup lang="ts">
 useHead({
   htmlAttrs: {
-    lang: "fr",
+    lang: 'fr'
   },
-  title: "Ardoise",
+  title: 'Ardoise — Recettes & planification des repas',
   titleTemplate: (title) =>
-    title !== "Ardoise" ? `${title} · Ardoise` : title,
+    title !== 'Ardoise' ? `${title} · Ardoise` : title,
   meta: [
     {
-      name: "description",
-      content: "Liste des courses et repas, le tout simplement",
-    },
+      name: 'description',
+      content: 'Liste des courses et repas, le tout simplement'
+    }
     // { property: 'og:image', content: 'https://movies.nuxt.space/social-card.png' },
     // { name: 'twitter:card', content: 'summary_large_image' },
     // { name: 'twitter:site', content: '@nuxt_js' },
     // { name: 'twitter:creator', content: '@nuxt_js' },
-  ],
+  ]
   // link: [
   //   {
   //     rel: 'icon',
@@ -23,7 +23,7 @@ useHead({
   //     href: '/movies.webp',
   //   },
   // ],
-});
+})
 </script>
 
 <template>

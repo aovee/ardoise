@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
-
 const props = defineProps<{
   recipe: Recipe
 }>()
@@ -9,28 +7,6 @@ const emit = defineEmits<{ saved: []; deleted: [] }>()
 
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
-
-const menuItems: DropdownMenuItem[][] = [
-  [
-    {
-      label: 'Modifier',
-      icon: 'i-iconoir-edit',
-      onSelect: () => {
-        showEditModal.value = true
-      }
-    }
-  ],
-  [
-    {
-      label: 'Supprimer',
-      icon: 'i-iconoir-trash',
-      color: 'error' as const,
-      onSelect: () => {
-        showDeleteModal.value = true
-      }
-    }
-  ]
-]
 
 const toast = useToast()
 async function onDelete() {
@@ -62,23 +38,37 @@ const totalRecipeTime = computed(
   <UPageCard
     :title="recipe.title"
     variant="subtle"
-    orientation="vertical"
     reverse
     class="hover:cursor-pointer hover:ring-primary transition-all duration-200"
     :ui="{
-      container: 'p-0 sm:p-0',
+      container:
+        'grid grid-cols-[max-content_1fr] md:grid-cols-1 p-0 sm:p-0 gap-0',
       body: 'w-full',
-      description: 'flex items-center gap-1 text-sm text-muted w-full',
+      title: 'pt-2',
+      description: 'flex flex-col items-start gap-2 text-sm text-muted w-full',
       wrapper: 'px-4 sm:px-6 pb-3'
     }"
     @click="showEditModal = true"
   >
     <template #description>
-      {{ totalRecipeTime }} min · {{ recipe.ingredients.length }} ingrédients
+      <div>
+        {{ totalRecipeTime }} min · {{ recipe.ingredients.length }} ingrédients
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <UBadge
+          v-for="category in recipe.categories"
+          :label="category"
+          class="rounded-full uppercase px-3 py-2"
+          variant="outline"
+        />
+      </div>
     </template>
 
-    <div v-if="recipe.image" class="flex justify-center bg-primary/10 py-2">
-      <img :src="recipe.image" :alt="recipe.title" class="size-48" />
+    <div
+      v-if="recipe.image"
+      class="flex justify-center items-center bg-primary/10 p-2"
+    >
+      <img :src="recipe.image" :alt="recipe.title" class="size-10 md:size-48" />
     </div>
 
     <RecipeEditModal

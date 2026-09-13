@@ -37,6 +37,7 @@ function emptyRecipe(): RecipeInput {
     timers: { preparation: 5, cooking: 5 },
     categories: [],
     ingredients: [emptyIngredient.value],
+    servings: 1,
     image: ''
   }
 }
@@ -119,7 +120,7 @@ function onCreate(item: string) {
         <UInput v-model="state.title" class="w-full" />
       </UFormField>
 
-      <div class="grid grid-cols-2 items-center gap-3">
+      <div class="grid grid-cols-3 items-center gap-3">
         <UFormField label="Préparation (min)" name="timers.preparation">
           <UInputNumber
             v-model="state.timers.preparation"
@@ -133,6 +134,9 @@ function onCreate(item: string) {
             :min="0"
             class="w-full"
           />
+        </UFormField>
+        <UFormField label="Nb parts" name="servings">
+          <UInputNumber v-model="state.servings" :min="1" class="w-full" />
         </UFormField>
       </div>
       <div>
@@ -244,7 +248,12 @@ function onCreate(item: string) {
           multiple
           class="w-full"
           @create="onCreate"
-        />
+          :search-input="{ placeholder: 'Rechercher...' }"
+        >
+          <template #create-item-label="{ item }">
+            Créer <b>"{{ item }}"</b> catégorie
+          </template>
+        </USelectMenu>
       </UFormField>
     </div>
   </UForm>

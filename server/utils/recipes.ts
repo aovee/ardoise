@@ -1,5 +1,9 @@
 import type { Row } from '@libsql/client'
-import { recipeInputSchema, type Recipe, type RecipeInput } from '../../shared/utils/recipe'
+import {
+  recipeInputSchema,
+  type Recipe,
+  type RecipeInput
+} from '../../shared/utils/recipe'
 
 // The schema + types now live in shared/utils/recipe.ts (auto-imported app-side too).
 // This file keeps only the pieces that are server-only.
@@ -13,6 +17,7 @@ export function rowToRecipe(row: Row): Recipe {
       preparation: Number(row.prep_time),
       cooking: Number(row.cook_time)
     },
+    servings: Number(row.servings),
     categories: row.categories ? JSON.parse(String(row.categories)) : [],
     ingredients: row.ingredients ? JSON.parse(String(row.ingredients)) : [],
     image: row.image ? String(row.image) : undefined
@@ -20,7 +25,9 @@ export function rowToRecipe(row: Row): Recipe {
 }
 
 // ── Read + validate a request body ───────────────────────────────────
-export async function readRecipeInput(event: Parameters<typeof readBody>[0]): Promise<RecipeInput> {
+export async function readRecipeInput(
+  event: Parameters<typeof readBody>[0]
+): Promise<RecipeInput> {
   const result = recipeInputSchema.safeParse(await readBody(event))
   if (!result.success) {
     throw createError({

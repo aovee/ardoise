@@ -32,7 +32,12 @@ async function onSubmit(data: RecipeInput) {
     title="Nouvelle recette"
     description="Ajoute une nouvelle recette à la liste disponible"
   >
-    <UButton label="Nouvelle recette" icon="i-iconoir-plus" />
+    <UButton
+      label="Nouvelle recette"
+      icon="i-iconoir-plus"
+      color="neutral"
+      class="px-3 py-2"
+    />
 
     <template #body>
       <RecipeForm v-if="open" form-id="recipe-add" @submit="onSubmit" />

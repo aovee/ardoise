@@ -25,6 +25,8 @@
   },
   "devDependencies": {
     "@iconify-json/iconoir": "^1.2.11",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/nuxt": "^14.4.0",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0"
   }

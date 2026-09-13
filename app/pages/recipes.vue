@@ -1,7 +1,45 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Liste des recettes'
+})
+
 const { data: recipes, pending, refresh } = useFetch('/api/recipes')
 
+const { categories } = useCategories()
+const categoriesFilterItems = computed(() => [
+  {
+    label: 'Toutes',
+    value: '*'
+  },
+  ...categories.value.map((c) => ({ label: c, value: c }))
+])
+const categoryFilter = ref<string>('*')
+
 const showAddModal = ref<boolean>(false)
+const search = ref<string>('')
+const debouncedSearch = refDebounced(search, 300)
+
+function applyCategoryFilter(category: { label: string; value: string }) {
+  categoryFilter.value = category.value
+}
+
+const prefilteredRecipes = computed<Recipe[]>(() => {
+  if (!recipes.value) return [] as Recipe[]
+
+  return categoryFilter.value !== '*'
+    ? recipes.value.filter((r) => r.categories.includes(categoryFilter.value))
+    : recipes.value
+})
+const filteredRecipes = computed<Recipe[]>(() => {
+  if (!prefilteredRecipes.value) return [] as Recipe[]
+
+  const term = debouncedSearch.value.trim()
+  if (!term || term.length <= 0) return prefilteredRecipes.value
+
+  const pattern = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+
+  return prefilteredRecipes.value.filter((r) => pattern.test(r.title))
+})
 
 const actions = computed(() => [
   {
@@ -26,12 +64,46 @@ const actions = computed(() => [
 <template>
   <UDashboardPanel id="recettes">
     <template #header>
-      <UDashboardNavbar title="Recettes" :ui="{ title: 'text-xl' }">
-        <template #leading>
-          <UDashboardSidebarCollapse />
+      <UDashboardNavbar
+        class="items-start"
+        :ui="{
+          title: 'flex flex-col items-start gap-4',
+          right: 'flex items-center gap-4'
+        }"
+      >
+        <template #title>
+          <div class="text-3xl">Recettes</div>
+          <div class="text-muted text-sm">
+            {{ recipes?.length || 'Aucune' }} recette{{
+              (recipes?.length || 0) > 0 ? 's' : ''
+            }}
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <UButton
+              v-for="(category, k) in categoriesFilterItems"
+              class="rounded-full py-2 px-3 clickable"
+              :variant="
+                categoryFilter === category.value ? 'subtle' : 'outline'
+              "
+              :color="categoryFilter === category.value ? 'primary' : 'neutral'"
+              size="lg"
+              @click="applyCategoryFilter(category)"
+            >
+              {{ category.label }}
+            </UButton>
+          </div>
         </template>
-
         <template #right>
+          <UInput
+            v-model="search"
+            class="w-xs"
+            placeholder="Rechercher par nom, ingrédient"
+            icon="i-iconoir-search"
+            :ui="{
+              base: 'px-3 py-2',
+              leadingIcon: 'size-4'
+            }"
+          />
           <RecipeAddModal v-model:open="showAddModal" @saved="refresh()" />
         </template>
       </UDashboardNavbar>
@@ -60,7 +132,7 @@ const actions = computed(() => [
         </div>
         <RecipeCard
           v-else
-          v-for="recipe in recipes"
+          v-for="recipe in filteredRecipes"
           :key="recipe.id"
           :recipe="recipe"
           @saved="refresh()"

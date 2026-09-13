@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS recipes (
   cook_time   INTEGER NOT NULL DEFAULT 0,
   categories  TEXT,                 -- JSON array of strings
   ingredients TEXT,                 -- JSON array of { name, quantity: { amount, unit } }
+  servings    INTEGER NOT NULL DEFAULT 1,
   image       TEXT,
   created_at  TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at  TEXT NOT NULL DEFAULT (datetime('now'))

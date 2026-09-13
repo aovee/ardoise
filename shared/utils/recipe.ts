@@ -16,6 +16,7 @@ export const recipeInputSchema = z.object({
     preparation: z.number().nonnegative(),
     cooking: z.number().nonnegative()
   }),
+  servings: z.number().nonnegative(),
   categories: z.array(z.string()).default([]),
   ingredients: z.array(ingredientSchema).default([]),
   image: z.string().optional()

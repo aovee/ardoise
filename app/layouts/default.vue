@@ -30,14 +30,6 @@ const links = [
       onSelect: () => {
         open.value = false
       }
-    },
-    {
-      label: 'Favoris',
-      to: '/favorites',
-      icon: 'i-iconoir-heart',
-      onSelect: () => {
-        open.value = false
-      }
     }
   ]
 ] satisfies NavigationMenuItem[][]

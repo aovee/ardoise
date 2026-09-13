@@ -35,3 +35,7 @@
     font-weight: 500;
   }
 }
+
+.clickable {
+  @apply hover:cursor-pointer;
+}
