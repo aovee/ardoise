@@ -2,6 +2,16 @@
 import type { FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
 import { recipeInputSchema, type RecipeInput } from '#shared/utils/recipe'
 
+const { categories } = useCategories()
+
+interface IngredientInput {
+  name: string
+  quantity: {
+    amount: string
+    unit?: string
+  }
+}
+
 const props = defineProps<{
   // When present, the form starts pre-filled (edit). Omit for a blank form (add).
   initialValues?: RecipeInput
@@ -13,12 +23,20 @@ const emit = defineEmits<{ submit: [data: RecipeInput] }>()
 
 const formId = props.formId ?? 'recipe-form'
 
+const emptyIngredient = ref<IngredientInput>({
+  name: '',
+  quantity: {
+    amount: '',
+    unit: ''
+  }
+})
+
 function emptyRecipe(): RecipeInput {
   return {
     title: '',
     timers: { preparation: 5, cooking: 5 },
     categories: [],
-    ingredients: [],
+    ingredients: [emptyIngredient.value],
     image: ''
   }
 }
@@ -32,11 +50,11 @@ const state = reactive<RecipeInput>(
 )
 
 function addIngredient() {
-  state.ingredients.push({ name: '', quantity: { amount: '', unit: '' } })
+  state.ingredients.push(emptyIngredient.value)
 }
 
-function removeIngredient() {
-  state.ingredients.pop()
+function removeIngredient(n: number) {
+  state.ingredients.splice(n, 1)
 }
 
 function onSubmit(event: FormSubmitEvent<RecipeInput>) {
@@ -79,6 +97,12 @@ watch(file, async (selected) => {
     file.value = null
   }
 })
+
+function onCreate(item: string) {
+  categories.value.push(item)
+
+  state.categories.push(item)
+}
 </script>
 
 <template>
@@ -86,22 +110,21 @@ watch(file, async (selected) => {
     :id="formId"
     :schema="recipeInputSchema"
     :state="state"
-    class="grid grid-cols-3 divide-x divide-default"
+    class="grid grid-cols-1 lg:grid-cols-3 divide-x divide-default"
     @submit="onSubmit"
     @error="onError"
   >
-    <div class="col-span-2 space-y-4 p-4 sm:p-6">
+    <div class="lg:col-span-2 space-y-4 p-4 sm:p-6">
       <UFormField label="Titre" name="title">
-        <UInput v-model="state.title" class="w-full" variant="subtle" />
+        <UInput v-model="state.title" class="w-full" />
       </UFormField>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-3">
+      <div class="grid grid-cols-2 items-center gap-3">
         <UFormField label="Préparation (min)" name="timers.preparation">
           <UInputNumber
             v-model="state.timers.preparation"
             :min="0"
             class="w-full"
-            variant="subtle"
           />
         </UFormField>
         <UFormField label="Cuisson (min)" name="timers.cooking">
@@ -109,7 +132,6 @@ watch(file, async (selected) => {
             v-model="state.timers.cooking"
             :min="0"
             class="w-full"
-            variant="subtle"
           />
         </UFormField>
       </div>
@@ -120,33 +142,43 @@ watch(file, async (selected) => {
         <UFieldGroup
           v-for="(item, count) in state.ingredients"
           :key="count"
-          class="grid grid-cols-5 gap-2 mb-2"
+          class="grid grid-cols-[min-content_3fr_2fr] grid-rows-1 gap-2 mb-2"
         >
-          <UFormField :name="`ingredients.${count}.name`" class="col-span-3">
-            <UInput
-              v-model="item.name"
-              class="w-full"
-              variant="subtle"
-              placeholder="Nom"
+          <div class="row-span-1 flex items-center justify-start">
+            <UButton
+              variant="outline"
+              color="error"
+              icon="i-iconoir-trash"
+              :disabled="state.ingredients.length === 1"
+              size="sm"
+              @click="removeIngredient(count)"
             />
+          </div>
+
+          <UFormField :name="`ingredients.${count}.name`">
+            <UInput v-model="item.name" class="w-full" placeholder="Nom" />
           </UFormField>
-          <UFormField :name="`ingredients.${count}.quantity.amount`">
-            <UInput
-              v-model="item.quantity.amount"
-              variant="subtle"
-              placeholder="Quantité"
-            />
-          </UFormField>
-          <UFormField :name="`ingredients.${count}.quantity.unit`">
-            <UInput
-              v-model="item.quantity.unit"
-              variant="subtle"
-              placeholder="Unité"
-            />
-          </UFormField>
+
+          <div class="flex items-center gap-2">
+            <UFormField :name="`ingredients.${count}.quantity.amount`">
+              <UInput
+                v-model="item.quantity.amount"
+                placeholder="Quantité"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField :name="`ingredients.${count}.quantity.unit`">
+              <UInput
+                v-model="item.quantity.unit"
+                placeholder="Unité"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
         </UFieldGroup>
 
-        <div class="flex items-center gap-2 mt-3">
+        <div class="flex items-center justify-center gap-2 mt-5">
           <UButton
             @click="addIngredient"
             label="Ajouter"
@@ -155,21 +187,11 @@ watch(file, async (selected) => {
             type="button"
             color="neutral"
           />
-          <UButton
-            v-if="state.ingredients.length > 0"
-            @click="removeIngredient"
-            label="Retirer"
-            icon="i-iconoir-trash"
-            size="sm"
-            type="button"
-            variant="ghost"
-            color="error"
-          />
         </div>
       </div>
     </div>
 
-    <div class="p-4 sm:p-6">
+    <div class="p-4 sm:p-6 flex flex-col gap-6">
       <UFormField label="Image" name="image">
         <div class="flex items-center gap-3">
           <div class="flex flex-col items-start gap-1.5 w-full">
@@ -180,10 +202,10 @@ watch(file, async (selected) => {
               class="min-h-24 w-full"
               :ui="{ base: 'bg-elevated' }"
             >
-              <div v-if="state.image">
+              <div v-if="state.image" class="mx-auto text-center">
                 <UAvatar
                   :src="state.image ? state.image : undefined"
-                  class="w-full h-auto"
+                  class="w-32 h-auto max-w-xs"
                   icon="i-iconoir-media-image"
                 />
                 <div class="flex items-center gap-2 mt-5">
@@ -214,8 +236,15 @@ watch(file, async (selected) => {
         </div>
       </UFormField>
 
-      <UFormField>
-
+      <UFormField label="Catégories">
+        <USelectMenu
+          v-model="state.categories"
+          create-item
+          :items="categories"
+          multiple
+          class="w-full"
+          @create="onCreate"
+        />
       </UFormField>
     </div>
   </UForm>

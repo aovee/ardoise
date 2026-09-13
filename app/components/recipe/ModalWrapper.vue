@@ -13,7 +13,7 @@ defineProps<{
     :title="title"
     :description="description"
     :ui="{
-      content: 'w-4xl max-w-4xl',
+      content: 'w-auto lg:w-4xl xl:w-5xl max-w-4xl xl:max-w-5xl',
       body: 'p-0 sm:p-0',
       footer: 'justify-end gap-4'
     }"

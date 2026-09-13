@@ -7,6 +7,7 @@ const actions = computed(() => [
   {
     icon: 'i-lucide-plus',
     label: 'Nouvelle recette',
+    loading: pending.value,
     onClick() {
       showAddModal.value = true
     }
@@ -16,6 +17,7 @@ const actions = computed(() => [
     label: 'Actualiser',
     color: 'neutral' as const,
     variant: 'subtle' as const,
+    loading: pending.value,
     onClick: () => refresh()
   }
 ])

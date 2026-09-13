@@ -48,6 +48,16 @@ export default defineAppConfig({
       tip: 'i-iconoir-light-bulb',
       upload: 'i-iconoir-upload',
       warning: 'i-iconoir-warning-triangle'
+    },
+    input: {
+      defaultVariants: {
+        variant: 'subtle'
+      }
+    },
+    inputNumber: {
+      defaultVariants: {
+        variant: 'subtle'
+      }
     }
   }
 })

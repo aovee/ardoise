@@ -11,5 +11,6 @@ export default defineEventHandler(async (event) => {
   if (rows.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Recipe not found' })
   }
-  return rowToRecipe(rows[0])
+
+  return rowToRecipe(rows[0]!)
 })

@@ -6,7 +6,7 @@ export const ingredientSchema = z.object({
   name: z.string().min(1),
   quantity: z.object({
     amount: z.string(),
-    unit: z.string()
+    unit: z.string().optional()
   })
 })
 
