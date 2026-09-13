@@ -25,4 +25,5 @@ export const recipeInputSchema = z.object({
 export type RecipeInput = z.infer<typeof recipeInputSchema>
 export interface Recipe extends RecipeInput {
   id: string
+  createdAt: string
 }

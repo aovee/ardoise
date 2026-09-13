@@ -20,7 +20,8 @@ export function rowToRecipe(row: Row): Recipe {
     servings: Number(row.servings),
     categories: row.categories ? JSON.parse(String(row.categories)) : [],
     ingredients: row.ingredients ? JSON.parse(String(row.ingredients)) : [],
-    image: row.image ? String(row.image) : undefined
+    image: row.image ? String(row.image) : undefined,
+    createdAt: String(row.created_at)
   }
 }
 

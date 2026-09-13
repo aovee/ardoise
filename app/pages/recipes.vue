@@ -1,4 +1,9 @@
 <script setup lang="ts">
+interface SortItem {
+  label: string
+  value: string
+}
+
 useSeoMeta({
   title: 'Liste des recettes'
 })
@@ -15,6 +20,26 @@ const categoriesFilterItems = computed(() => [
 ])
 const categoryFilter = ref<string>('*')
 
+const sortItems: SortItem[] = [
+  {
+    label: 'Du plus récent au plus ancien',
+    value: 'created_at.desc'
+  },
+  {
+    label: 'Du plus ancien au plus récent',
+    value: 'created_at.asc'
+  },
+  {
+    label: 'De A à Z',
+    value: 'title.asc'
+  },
+  {
+    label: 'De Z à A',
+    value: 'title.desc'
+  }
+]
+const sort = ref<SortItem>(sortItems[0]!)
+
 const showAddModal = ref<boolean>(false)
 const search = ref<string>('')
 const debouncedSearch = refDebounced(search, 300)
@@ -30,6 +55,7 @@ const prefilteredRecipes = computed<Recipe[]>(() => {
     ? recipes.value.filter((r) => r.categories.includes(categoryFilter.value))
     : recipes.value
 })
+
 const filteredRecipes = computed<Recipe[]>(() => {
   if (!prefilteredRecipes.value) return [] as Recipe[]
 
@@ -39,6 +65,25 @@ const filteredRecipes = computed<Recipe[]>(() => {
   const pattern = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
 
   return prefilteredRecipes.value.filter((r) => pattern.test(r.title))
+})
+
+const sortedRecipes = computed<Recipe[]>(() => {
+  const [by, order] = sort.value.value.split('.')
+  const dir = order === 'asc' ? 1 : -1
+
+  // Clone first: Array.sort mutates in place, and filteredRecipes can be the
+  // raw fetched array — sorting it would mutate reactive source data.
+  return [...filteredRecipes.value].sort((a: Recipe, b: Recipe) => {
+    if (by === 'created_at') {
+      // createdAt arrives as an ISO string over client fetches (only SSR
+      // hydration revives a real Date), so coerce before comparing.
+      return (
+        (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) *
+        dir
+      )
+    }
+    return a.title.localeCompare(b.title) * dir
+  })
 })
 
 const actions = computed(() => [
@@ -68,7 +113,7 @@ const actions = computed(() => [
         class="items-start"
         :ui="{
           title: 'flex flex-col items-start gap-4',
-          right: 'flex items-center gap-4'
+          right: 'flex flex-col justify-between items-end h-full'
         }"
       >
         <template #title>
@@ -81,6 +126,7 @@ const actions = computed(() => [
           <div class="flex flex-wrap gap-2">
             <UButton
               v-for="(category, k) in categoriesFilterItems"
+              :key="k"
               class="rounded-full py-2 px-3 clickable"
               :variant="
                 categoryFilter === category.value ? 'subtle' : 'outline'
@@ -94,17 +140,32 @@ const actions = computed(() => [
           </div>
         </template>
         <template #right>
-          <UInput
-            v-model="search"
-            class="w-xs"
-            placeholder="Rechercher par nom, ingrédient"
-            icon="i-iconoir-search"
+          <div class="flex items-center gap-4">
+            <UInput
+              v-model="search"
+              class="w-xs"
+              placeholder="Rechercher par nom, ingrédient"
+              icon="i-iconoir-search"
+              :ui="{
+                base: 'px-3 py-2',
+                leadingIcon: 'size-4'
+              }"
+            />
+            <RecipeAddModal v-model:open="showAddModal" @saved="refresh()" />
+          </div>
+          <USelectMenu
+            v-model="sort"
+            :items="sortItems"
+            icon="i-iconoir-sort"
+            label-key="label"
+            variant="ghost"
+            class="w-min text-primary"
+            :search-input="false"
             :ui="{
-              base: 'px-3 py-2',
-              leadingIcon: 'size-4'
+              leadingIcon: 'text-primary',
+              trailingIcon: 'hidden'
             }"
           />
-          <RecipeAddModal v-model:open="showAddModal" @saved="refresh()" />
         </template>
       </UDashboardNavbar>
     </template>
@@ -132,7 +193,7 @@ const actions = computed(() => [
         </div>
         <RecipeCard
           v-else
-          v-for="recipe in filteredRecipes"
+          v-for="recipe in sortedRecipes"
           :key="recipe.id"
           :recipe="recipe"
           @saved="refresh()"
