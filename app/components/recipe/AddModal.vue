@@ -36,7 +36,11 @@ async function onSubmit(data: RecipeInput) {
       label="Nouvelle recette"
       icon="i-iconoir-plus"
       color="neutral"
-      class="px-3 py-2"
+      class="absolute md:relative rounded-full md:rounded bottom-5 md:bottom-auto right-5 md:right-auto z-10 size-15 md:size-auto py-0 px-0 md:px-3 md:py-2"
+      :ui="{
+        label: 'hidden md:flex',
+        leadingIcon: 'size-6 md:size-4 w-full'
+      }"
     />
 
     <template #body>

@@ -68,14 +68,21 @@ const actions = computed(() => [
     <template #header>
       <UDashboardNavbar
         class="items-start"
+        :toggle="false"
         :ui="{
+          root: 'items-start flex-col gap-4 xl:flex-row',
           title: 'flex flex-col items-start gap-4',
-          right: 'flex flex-col justify-between items-end h-full'
+          left: 'w-full',
+          right:
+            'flex flex-col justify-start xl:justify-between gap-4 items-end h-full w-full xl:w-auto'
         }"
       >
         <template #title>
-          <div class="text-3xl">Recettes</div>
-          <div class="text-muted text-sm">
+          <div class="text-3xl">
+            <UDashboardSidebarToggle />
+            Recettes
+          </div>
+          <div class="hidden lg:flex text-muted text-sm">
             {{ recipes?.length || 'Aucune' }} recette{{
               (recipes?.length || 0) > 0 ? 's' : ''
             }}
@@ -97,10 +104,10 @@ const actions = computed(() => [
           </div>
         </template>
         <template #right>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 w-full">
             <UInput
               v-model="search"
-              class="w-xs"
+              class="w-full xl:w-xs"
               placeholder="Rechercher par nom, ingrédient"
               icon="i-iconoir-search"
               :ui="{
@@ -120,6 +127,7 @@ const actions = computed(() => [
             :search-input="false"
             :trailing-icon="false"
             :ui="{
+              content: 'min-w-fit px-2',
               leadingIcon: 'text-primary'
             }"
           />
@@ -129,11 +137,11 @@ const actions = computed(() => [
 
     <template #body>
       <div
-        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 3xl:grid-cols-6 gap-6"
+        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-6"
       >
         <div
           v-if="pending || (recipes && recipes.length <= 0)"
-          class="col-span-1 md:col-span-3 lg:col-span-4 xl:col-span-5 2xl:col-span-6 min-h-[calc(100svh-var(--ui-header-height)-48px)] flex justify-center items-center"
+          class="col-span-1 md:col-span-3 lg:col-span-3 xl:col-span-3 2xl:col-span-5 min-h-[calc(100svh-var(--ui-header-height)-48px)] flex justify-center items-center"
         >
           <UEmpty
             icon="i-lucide-file"
