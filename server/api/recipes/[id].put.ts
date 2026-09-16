@@ -1,39 +1,38 @@
+import { eq, sql } from 'drizzle-orm'
+import { db, schema } from '@nuxthub/db'
+
 // PUT /api/recipes/:id — replace a recipe's fields. 404 if it doesn't exist.
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id') ?? ''
   const input = await readRecipeInput(event)
 
-  const db = useDb()
-
   // Read the current image so we can clean it up if this update replaces it.
-  const { rows } = await db.execute({
-    sql: 'SELECT image FROM recipes WHERE id = ?',
-    args: [id]
-  })
+  const existing = await db
+    .select({ image: schema.recipes.image })
+    .from(schema.recipes)
+    .where(eq(schema.recipes.id, id))
+    .limit(1)
 
-  if (rows.length === 0) {
+  if (existing.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Recipe not found' })
   }
 
-  await db.execute({
-    sql: `UPDATE recipes
-          SET title = ?, prep_time = ?, cook_time = ?, categories = ?, ingredients = ?, image = ?, servings = ?,
-              updated_at = datetime('now')
-          WHERE id = ?`,
-    args: [
-      input.title,
-      input.timers.preparation,
-      input.timers.cooking,
-      JSON.stringify(input.categories),
-      JSON.stringify(input.ingredients),
-      input.image ?? null,
-      input.servings,
-      id
-    ]
-  })
+  await db
+    .update(schema.recipes)
+    .set({
+      title: input.title,
+      prepTime: input.timers.preparation,
+      cookTime: input.timers.cooking,
+      categories: input.categories,
+      ingredients: input.ingredients,
+      image: input.image ?? null,
+      servings: input.servings,
+      updatedAt: sql`(datetime('now'))`
+    })
+    .where(eq(schema.recipes.id, id))
 
   // If the image changed, delete the old blob (no-op for pasted/external URLs).
-  const oldImage = rows[0]?.image ? String(rows[0].image) : null
+  const oldImage = existing[0]?.image ?? null
   if (oldImage !== (input.image ?? null)) {
     await deleteBlobIfOwned(oldImage)
   }

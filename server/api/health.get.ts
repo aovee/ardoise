@@ -1,6 +1,8 @@
-// GET /api/health — verifies the Turso connection is live.
+import { sql } from 'drizzle-orm'
+import { db } from '@nuxthub/db'
+
+// GET /api/health — verifies the database connection is live.
 export default defineEventHandler(async () => {
-  const db = useDb()
-  const result = await db.execute('SELECT 1 AS ok')
-  return { ok: result.rows[0]?.ok === 1 }
+  await db.run(sql`SELECT 1`)
+  return { ok: true }
 })

@@ -1,6 +1,12 @@
+import { asc } from 'drizzle-orm'
+import { db, schema } from '@nuxthub/db'
+
 // GET /api/recipes — list all recipes, alphabetically.
 export default defineEventHandler(async () => {
-  const db = useDb()
-  const { rows } = await db.execute('SELECT * FROM recipes ORDER BY title')
+  const rows = await db
+    .select()
+    .from(schema.recipes)
+    .orderBy(asc(schema.recipes.title))
+
   return rows.map(rowToRecipe)
 })

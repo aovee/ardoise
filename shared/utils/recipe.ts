@@ -22,6 +22,7 @@ export const recipeInputSchema = z.object({
   image: z.string().optional()
 })
 
+export type Ingredient = z.infer<typeof ingredientSchema>
 export type RecipeInput = z.infer<typeof recipeInputSchema>
 export interface Recipe extends RecipeInput {
   id: string

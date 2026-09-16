@@ -1,4 +1,4 @@
-import type { Row } from '@libsql/client'
+import type { RecipeRow } from '../db/schema'
 import {
   recipeInputSchema,
   type Recipe,
@@ -9,19 +9,21 @@ import {
 // This file keeps only the pieces that are server-only.
 
 // ── DB row → clean API object ────────────────────────────────────────
-export function rowToRecipe(row: Row): Recipe {
+// The row comes from Drizzle: keys are camelCase and JSON columns are already
+// parsed, so there's nothing to JSON.parse here.
+export function rowToRecipe(row: RecipeRow): Recipe {
   return {
-    id: String(row.id),
-    title: String(row.title),
+    id: row.id,
+    title: row.title,
     timers: {
-      preparation: Number(row.prep_time),
-      cooking: Number(row.cook_time)
+      preparation: row.prepTime,
+      cooking: row.cookTime
     },
-    servings: Number(row.servings),
-    categories: row.categories ? JSON.parse(String(row.categories)) : [],
-    ingredients: row.ingredients ? JSON.parse(String(row.ingredients)) : [],
-    image: row.image ? String(row.image) : undefined,
-    createdAt: String(row.created_at)
+    servings: row.servings,
+    categories: row.categories ?? [],
+    ingredients: row.ingredients ?? [],
+    image: row.image ?? undefined,
+    createdAt: row.createdAt
   }
 }
 

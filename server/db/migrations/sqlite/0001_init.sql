@@ -1,5 +1,6 @@
--- Recipes + meal planning schema for Turso / libSQL.
--- Apply with:  turso db shell <your-db-name> < server/database/schema.sql
+-- Recipes + meal planning schema for the NuxtHub SQLite (libSQL) database.
+-- Applied automatically by NuxtHub on dev/build; tracked in _hub_migrations.
+-- IF NOT EXISTS keeps it safe against the pre-existing Turso database.
 
 CREATE TABLE IF NOT EXISTS recipes (
   id          TEXT PRIMARY KEY,
