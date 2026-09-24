@@ -39,3 +39,4 @@ export const mealPlans = sqliteTable(
 )
 
 export type RecipeRow = typeof recipes.$inferSelect
+export type MealPlanRow = typeof mealPlans.$inferSelect
