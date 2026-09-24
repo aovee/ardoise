@@ -64,7 +64,7 @@ const actions = computed(() => [
 </script>
 
 <template>
-  <UDashboardPanel id="recettes">
+  <UDashboardPanel id="recipes">
     <template #header>
       <UDashboardNavbar
         class="items-start"

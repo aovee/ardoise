@@ -28,7 +28,7 @@ const week = computed(() => {
 </script>
 
 <template>
-  <UDashboardPanel id="week" :ui="{ body: 'py-0 sm:py-0' }">
+  <UDashboardPanel id="planning" :ui="{ body: 'py-0 sm:py-0' }">
     <template #header>
       <UDashboardNavbar :ui="{ title: 'flex items-center gap-3' }">
         <template #title>
